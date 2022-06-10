@@ -57,7 +57,7 @@ class RepairmanBase(BaseModel):
 	phone_num: int
 	email: str
 	job: str
-	state = str
+	state: str
 	city: str
 
 
