@@ -44,14 +44,14 @@ def get_users(db: Session = Depends(dependency=get_db)):
 	return users
 
 
-@app.post('/user/login/')
+@app.post('/user/login/', response_model=schemas.User)
 def login(user: verify, db: Session = Depends(get_db)):
 	db_user = crud.get_user_by_phone(db=db, phone_num=user.phone)
 	if db_user:
 		if db_user.hashed_password == (user.password + "think its hashed"):
-			return {
-				"status": "success",
-				"data": db_user.name}
+			return db_user
+		else:
+			raise HTTPException(status_code=400, detail="wrong pass or phone")
 	else:
 		raise HTTPException(status_code=400, detail="wrong pass or phone")
 
