@@ -11,10 +11,6 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
 
-class Test(BaseModel):
-	text: str
-
-
 class verify(BaseModel):
 	phone: int
 	password: str
@@ -47,6 +43,7 @@ def get_users(db: Session = Depends(dependency=get_db)):
 @app.post('/user/login/', response_model=schemas.User)
 def login(user: verify, db: Session = Depends(get_db)):
 	db_user = crud.get_user_by_phone(db=db, phone_num=user.phone)
+	print(db_user.name)
 	if db_user:
 		if db_user.hashed_password == (user.password + "think its hashed"):
 			return db_user
@@ -64,7 +61,9 @@ def get_user(phone_num: int, db: Session = Depends(get_db)):
 	return db_user
 
 
-@app.post('/test')
-def test(item: Test):
-	ip = item.text
-	return ip
+@app.patch('/user/{phone_num}/', response_model=schemas.User)
+def update_user(user: schemas.UserUpdate, phone_num: int, db: Session = Depends(get_db)):
+	db_user = crud.update_user_apartment(db=db, user=user, phone_num=phone_num)
+	if db_user is None:
+		raise HTTPException(status_code=400, detail="user not found")
+	return db_user
