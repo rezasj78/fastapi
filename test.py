@@ -2,19 +2,19 @@ import json
 
 import requests
 
-url = 'http://localhost:8000/users'
+url = 'http://localhost:8000/user'
 myobj = {
 	"phone_num": 78,
-	"email": "email.2",
-	"name": "reza",
-	"home_num": "3",
-	"role": 0,
+	"email": "em1",
+	"name": "rza",
+	"home_num": "5",
+	"role": 0 ,
 	"password": "1234"
 }
 date = {
 	"phone": 78,
 	"password": "1234"
 }
-x = requests.get(url=url)
+x = requests.post(url=url, json=myobj)
 
-print(x.json()[1], )
+print(x.json())
