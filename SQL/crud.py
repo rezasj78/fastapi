@@ -26,6 +26,10 @@ def create_user(db: Session, user: schemas.UserCreate):
 	return db_user
 
 
+def get_users_by_apartment(db: Session, apartment_id: int):
+	return db.query(models.User).filter(models.User.apartment_id == apartment_id).all()
+
+
 def update_user_apartment(db: Session, phone_num, user: schemas.UserUpdate):
 	db_user = get_user_by_phone(db, phone_num=phone_num)
 	if db_user is None:

@@ -70,6 +70,14 @@ def get_user(phone_num: int, db: Session = Depends(get_db)):
 	return db_user
 
 
+@app.get('/users/{apartment_id}', response_model=List[schemas.User])
+def get_users_by_apartment(apartment_id, db: Session = Depends(get_db)):
+	users = crud.get_users_by_apartment(db, apartment_id)
+	if users is None:
+		raise HTTPException(status_code=404, detail='no user was found for this apartment')
+	return users
+
+
 # ENDPOINT FOR REPAIRMAN
 @app.post("/repairmen", response_model=schemas.Repairman)
 def creat_repairman(repairman: schemas.RepairmanCreate, db: Session = Depends(get_db)):
