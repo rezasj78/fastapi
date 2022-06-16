@@ -43,6 +43,18 @@ class Apartment(Base):
 	unit_num = Column(Integer)
 	manager_id = Column(Integer, ForeignKey('user.id'), default=None)
 
+
+class RequestsForRepairman(Base):
+	__tablename__ = 'request_for_repairman'
+
+	id = Column(Integer, primary_key=True, index=True)
+	repairman_id = Column(Integer, ForeignKey('repairman.id'))
+	manager_id = Column(Integer, ForeignKey('user.id'))
+	apartment_id = Column(Integer, ForeignKey('apartment.id'))
+	job = Column(String)
+	address = Column(String)
+	manager_name = Column(String)
+
 # class ApartmentAndRepairmen(Base):
 # 	__tablename__ = "apartment_and_Repairmen"
 #

@@ -70,3 +70,23 @@ class Repairman(RepairmanBase):
 
 	class Config:
 		orm_mode = True
+
+
+class RequestForRepairmanBase(BaseModel):
+	repairman_id: int
+	manager_id: int
+	apartment_id: int
+	job: str
+
+
+class RequestForRepairmanCreate(RequestForRepairmanBase):
+	pass
+
+
+class RequestForRepairman(RequestForRepairmanBase):
+	id: int
+	address: str
+	manager_name: str
+
+	class Config:
+		orm_mode = True

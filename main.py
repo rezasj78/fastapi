@@ -27,7 +27,8 @@ def get_db():
 		db.close()
 
 
-# ENDPOINT FOR USERS
+###############################################################################################
+# ENDPOINT FOR USERS ###############################################################################################
 @app.post("/user", response_model=schemas.User)
 def creat_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 	db_user = crud.get_user_by_phone(db, phone_num=user.phone_num)
@@ -49,8 +50,16 @@ def login(user: verify, db: Session = Depends(get_db)):
 
 
 @app.patch('/user/{phone_num}', response_model=schemas.User)
-def update_user(user: schemas.UserUpdate, phone_num: int, db: Session = Depends(get_db)):
+def update_user_apartment(user: schemas.UserUpdate, phone_num: int, db: Session = Depends(get_db)):
 	db_user = crud.update_user_apartment(db=db, user=user, phone_num=phone_num)
+	if db_user is None:
+		raise HTTPException(status_code=404, detail="user not found")
+	return db_user
+
+
+@app.patch("/user/exit_apartment/{phone_num}", response_model=schemas.User)
+def remove_user_from_apartment(phone_num: int, db: Session = Depends(get_db)):
+	db_user = crud.remove_user_apartment(db, phone_num=phone_num)
 	if db_user is None:
 		raise HTTPException(status_code=404, detail="user not found")
 	return db_user
@@ -78,7 +87,16 @@ def get_users_by_apartment(apartment_id, db: Session = Depends(get_db)):
 	return users
 
 
-# ENDPOINT FOR REPAIRMAN
+@app.get('/repairman_for_hire/{job}/{city}', response_model=List[schemas.Repairman])  # TODO
+def get_repairmen_for_manager(job: str, city: str, db: Session = Depends(get_db)):
+	repairmen = crud.get_repairman_for_manager(db, job, city)
+	if repairmen is None:
+		raise HTTPException(status_code=404, detail='no repairman found')
+	return repairmen
+
+
+###############################################################################################
+# ENDPOINT FOR REPAIRMAN #############################################################################################
 @app.post("/repairmen", response_model=schemas.Repairman)
 def creat_repairman(repairman: schemas.RepairmanCreate, db: Session = Depends(get_db)):
 	db_repairman = crud.get_repairman_by_phone(db, phone_num=repairman.phone_num)
@@ -99,6 +117,12 @@ def login(repairman: verify, db: Session = Depends(get_db)):
 		raise HTTPException(status_code=404, detail="wrong pass or phone")
 
 
+@app.get("/repairmen", response_model=List[schemas.Repairman])
+def get_repairmen(db: Session = Depends(dependency=get_db)):
+	users = crud.get_repairmen(db)
+	return users
+
+
 @app.get('/repairman/{phone_num}', response_model=schemas.Repairman)
 def get_repairman(phone_num: int, db: Session = Depends(get_db)):
 	db_repairman = crud.get_repairman_by_phone(db=db, phone_num=phone_num)
@@ -107,7 +131,8 @@ def get_repairman(phone_num: int, db: Session = Depends(get_db)):
 	return db_repairman
 
 
-# ENDPOINT FOR APARTMENT
+###############################################################################################
+# ENDPOINT FOR APARTMENT #############################################################################################
 @app.post('/apartment', response_model=schemas.Apartment)
 def create_apartment(apartment: schemas.ApartmentCreate, db: Session = Depends(get_db)):
 	return crud.creat_apartment(db, apartment=apartment)
@@ -125,7 +150,7 @@ def get_apartment_by_manager(phone_num: int, db: Session = Depends(get_db)):
 	return apartment
 
 
-@app.get('/user/apartment/{phone_num}', response_model=schemas.Apartment, )
+@app.get('/user/apartment/{phone_num}', response_model=schemas.Apartment)
 def get_apartment_by_user(phone_num: int, db: Session = Depends(get_db)):
 	apartment = crud.get_apartment_by_user(db, phone_num)
 	if apartment is None:
@@ -141,3 +166,28 @@ def get_apartment_by_id(apartment_id: int, db: Session = Depends(get_db)):
 	if apartment is None:
 		raise HTTPException(status_code=404, detail="apartment not found")
 	return apartment
+
+
+###############################################################################################
+# ENDPOINT FOR HIRING REQUEST ##########################################################################################
+
+
+@app.post('/requests/hiring', response_model=schemas.RequestForRepairman)
+def create_request_for_hiring(apartment: schemas.RequestForRepairmanCreate, db: Session = Depends(get_db)):
+	return crud.create_request_for_hiring_repairman(db, apartment)
+
+
+@app.get('/requests/hiring/manager/{manager_id}', response_model=List[schemas.RequestForRepairman])
+def get_hiring_requests_for_manager(manager_id: int, db: Session = Depends(get_db)):
+	requests = crud.get_hiring_requests_for_manager(db, manager_id)
+	if requests is None:
+		raise HTTPException(status_code=404, detail='no requests found')
+	return requests
+
+
+@app.get('/requests/hiring/repairman/{repairman_id}', response_model=List[schemas.RequestForRepairman])
+def get_hiring_requests_for_repairman(repairman_id: int, db: Session = Depends(get_db)):
+	requests = crud.get_hiring_requests_for_repairman(db, repairman_id)
+	if requests is None:
+		raise HTTPException(status_code=404, detail='no requests found')
+	return requests
