@@ -153,11 +153,74 @@ def create_request_for_hiring_repairman(db: Session, request: schemas.RequestFor
 	db.refresh(db_request)
 	return db_request
 
-# def get_repairmens_for_apartment(db: Session, apartment_id: int):
-# 	return db.query(models.ApartmentAndRepairmen).filter(
-# 		models.ApartmentAndRepairmen.apartment_id == apartment_id).all()
-#
 
-# def get_apartments_for_repairman(db: Session, repairman_id: int):
-# 	return db.query(models.ApartmentAndRepairmen).filter(
-# 		models.ApartmentAndRepairmen.repairman_id == repairman_id).all()
+# APARTMENT AND REPAIRMAN STUFF ##################################
+
+def get_apartment_and_repairmen_for_user(db: Session, apartment_id: int):
+	if db.query(models.ApartmentAndRepairmen).filter(
+			models.ApartmentAndRepairmen.apartment_id == apartment_id).first() is None:
+		return None
+	relations = db.query(models.ApartmentAndRepairmen).filter(
+		models.ApartmentAndRepairmen.apartment_id == apartment_id).all()
+	return relations
+
+
+def get_apartment_and_repairmen_for_repairman(db: Session, repairman_id: int):
+	if db.query(models.ApartmentAndRepairmen).filter(
+			models.ApartmentAndRepairmen.repairman_id == repairman_id).first() is None:
+		return None
+	relations = db.query(models.ApartmentAndRepairmen).filter(
+		models.ApartmentAndRepairmen.repairman_id == repairman_id).all()
+	return relations
+
+
+def create_apartment_and_repairmen(db: Session, aar: schemas.ApartmentAndRepairmenCreate):
+	repairman_name = db.query(models.Repairman).filter(models.Repairman.id == aar.repairman_id).first()
+	if repairman_name is None:
+		return 1
+	apartment_name = db.query(models.Apartment).filter(models.Apartment.id == aar.apartment_id).first()
+	if apartment_name is None:
+		return 2
+	repairman_name = repairman_name.name
+	apartment_name = apartment_name.name
+	db_request = models.ApartmentAndRepairmen(repairman_id=aar.repairman_id, apartment_id=aar.apartment_id,
+											  manager_id=aar.manager_id, job=aar.job, repairman_name=repairman_name,
+											  apartment_name=apartment_name)
+	db.add(db_request)
+	db.commit()
+	db.refresh(db_request)
+	return db_request
+
+
+# REQUEST FOR REPAIR STUFF ##################################
+
+def get_requests_repair_for_user(db: Session, user_id: int):
+	if db.query(models.RequestForRepair).filter(models.RequestForRepair.user_id == user_id).first() is None:
+		return None
+	return db.query(models.RequestForRepair).filter(models.RequestForRepair.user_id == user_id).all()
+
+
+def get_requests_repair_for_repairman(db: Session, repairman_id: int):
+	if db.query(models.RequestForRepair).filter(models.RequestForRepair.repairman_id == repairman_id).first() is None:
+		return None
+	return db.query(models.RequestForRepair).filter(models.RequestForRepair.repairman_id == repairman_id).all()
+
+
+def create_request_for_repair(db: Session, request: schemas.RequestForRepairCreate):
+	db_request = models.RequestForRepair(user_id=request.user_id, repairman_id=request.repairman_id,
+										 apartment_id=request.apartment_id, job=request.job,
+										 description=request.description, user_name=request.user_name,
+										 repairman_name=request.repairman_name)
+	db.add(db_request)
+	db.commit()
+	db.refresh(db_request)
+	return db_request
+
+
+def remove_request_for_repair(db: Session, request_id: int):
+	if db.query(models.RequestForRepair).filter(models.RequestForRepair.id == request_id).first() is None:
+		return None
+	request_db = db.query(models.RequestForRepair).filter(models.RequestForRepair.id == request_id).first()
+	db.delete(request_db)
+	db.commit()
+	return 1

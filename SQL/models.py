@@ -55,9 +55,27 @@ class RequestsForRepairman(Base):
 	address = Column(String)
 	manager_name = Column(String)
 
-# class ApartmentAndRepairmen(Base):
-# 	__tablename__ = "apartment_and_Repairmen"
-#
-# 	id = Column(Integer, primary_key=True, index=True)
-# 	repairman_id = Column(Integer, ForeignKey('repairman.id'), default=None)
-# 	apartment_id = Column(Integer, ForeignKey('apartment.id'), default=None)
+
+class ApartmentAndRepairmen(Base):
+	__tablename__ = "apartment_and_Repairmen"
+
+	id = Column(Integer, primary_key=True, index=True)
+	repairman_id = Column(Integer, ForeignKey('repairman.id'), default=None)
+	apartment_id = Column(Integer, ForeignKey('apartment.id'), default=None)
+	manager_id = Column(Integer, ForeignKey('user.id'), default=None)
+	job = Column(String)
+	repairman_name = Column(String)
+	apartment_name = Column(String)
+
+
+class RequestForRepair(Base):
+	__tablename__ = 'request_for_repair'
+
+	id = Column(Integer, primary_key=True, index=True)
+	user_id = Column(Integer, ForeignKey('user.id'), default=None)
+	repairman_id = Column(Integer, ForeignKey('repairman.id'), default=None)
+	apartment_id = Column(Integer, ForeignKey('apartment.id'), default=None)
+	job = Column(String)
+	description = Column(String)
+	user_name = Column(String)
+	repairman_name = Column(String)

@@ -90,3 +90,44 @@ class RequestForRepairman(RequestForRepairmanBase):
 
 	class Config:
 		orm_mode = True
+
+
+class ApartmentAndRepairmenBase(BaseModel):
+	repairman_id: int
+	apartment_id: int
+	manager_id: int
+	job: str
+
+
+class ApartmentAndRepairmenCreate(ApartmentAndRepairmenBase):
+	pass
+
+
+class ApartmentAndRepairmen(ApartmentAndRepairmenBase):
+	id: int
+	repairman_name: str
+	apartment_name: str
+
+	class Config:
+		orm_model = True
+
+
+class RequestForRepairBase(BaseModel):
+	user_id: int
+	repairman_id: int
+	apartment_id: int
+	job: str
+	description: str
+	user_name: str
+	repairman_name: str
+
+
+class RequestForRepairCreate(RequestForRepairBase):
+	pass
+
+
+class RequestForRepair(RequestForRepairBase):
+	id: int
+
+	class Config:
+		orm_model = True
