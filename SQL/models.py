@@ -79,3 +79,19 @@ class RequestForRepair(Base):
 	description = Column(String)
 	user_name = Column(String)
 	repairman_name = Column(String)
+
+
+# 	CHECKED BY MANGER: 1 IS CHECKED,  0 IS NOT CHECKED #################################
+class RequestForRepairElv(Base):
+	__tablename__ = 'request_for_repair_elv'
+
+	id = Column(Integer, primary_key=True, index=True)
+	user_id = Column(Integer, ForeignKey('user.id'), default=None)
+	repairman_id = Column(Integer, ForeignKey('repairman.id'), default=None)
+	apartment_id = Column(Integer, ForeignKey('apartment.id'), default=None)
+	manager_id = Column(Integer)
+	description = Column(String)
+	user_name = Column(String)
+	repairman_name = Column(String)
+	manager_name = Column(String)
+	checked_by_manager = Column(Integer)

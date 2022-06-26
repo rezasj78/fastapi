@@ -131,3 +131,26 @@ class RequestForRepair(RequestForRepairBase):
 
 	class Config:
 		orm_model = True
+
+
+class RequestForRepairElvBase(BaseModel):
+	user_id: int
+	repairman_id: int
+	apartment_id: int
+	description: str
+	user_name: str
+	repairman_name: str
+
+
+class RequestForRepairElvCreate(RequestForRepairBase):
+	pass
+
+
+class RequestForRepairElv(RequestForRepairBase):
+	id: int
+	manager_id: int
+	manager_name: str
+	checked_by_manager: int
+
+	class Config:
+		orm_model = True

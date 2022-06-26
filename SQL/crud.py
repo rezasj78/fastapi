@@ -224,3 +224,73 @@ def remove_request_for_repair(db: Session, request_id: int):
 	db.delete(request_db)
 	db.commit()
 	return 1
+
+
+# REQUEST FOR REPAIR ELEVATOR STUFF ##################################
+
+def get_request_repair_elv_for_repairman(db: Session, repairman_id: int):
+	if db.query(models.RequestForRepairElv).filter(
+			models.RequestForRepairElv.repairman_id == repairman_id and models.RequestForRepairElv.checked_by_manager == 1).first() is None:
+		return None
+	requests = db.query(models.RequestForRepairElv).filter(
+		models.RequestForRepairElv.repairman_id == repairman_id and models.RequestForRepairElv.checked_by_manager == 1).all()
+	return requests
+
+
+def get_request_repair_elv_for_user(db: Session, user_id: int):
+	if db.query(models.RequestForRepairElv).filter(models.RequestForRepairElv.user_id == user_id).first() is None:
+		return None
+	requests = db.query(models.RequestForRepairElv).filter(models.RequestForRepairElv.user_id == user_id).all()
+	return requests
+
+
+def get_request_repair_elv_for_manager(db: Session, manager_id: int):
+	if db.query(models.RequestForRepairElv).filter(models.RequestForRepairElv.manager_id == manager_id).first() is None:
+		return None
+	requests = db.query(models.RequestForRepairElv).filter(models.RequestForRepairElv.manager_id == manager_id).all()
+	return requests
+
+
+def create_request_for_repair_elv(db: Session, request: schemas.RequestForRepairElvCreate):
+	db_user = db.query(models.User).filter(models.User.id == request.user_id).first()
+	if db_user.role == 0:
+		db_apartment = db.query(models.Apartment).filter(models.Apartment.id == request.apartment_id).first()
+		manager_id = db_apartment.manager_id
+		db_manger = db.query(models.User).filter(models.User.id == manager_id).first()
+		manager_name = db_manger.name
+		db_request = models.RequestForRepairElv(user_id=request.user_id, repairman_id=request.repairman_id,
+												apartment_id=request.apartment_id, manager_id=manager_id,
+												description=request.description, user_name=request.user_name,
+												repairman_name=request.description, manager_name=manager_name,
+												checked_by_manager=0)
+		db.add(db_request)
+		db.commit()
+		db.refresh(db_request)
+		return db_request
+	if db_user.role == 1:
+		db_request = models.RequestForRepairElv(user_id=request.user_id, repairman_id=request.repairman_id,
+												apartment_id=request.apartment_id, manager_id=request.user_id,
+												description=request.description, user_name=request.user_name,
+												repairman_name=request.description, manager_name=request.user_name,
+												checked_by_manager=1)
+		db.add(db_request)
+		db.commit()
+		db.refresh(db_request)
+		return db_request
+
+
+def remove_request_for_repair_elv(db: Session, request_id: int):
+	if db.query(models.RequestForRepairElv).filter(models.RequestForRepairElv.id == request_id).first() is None:
+		return None
+	request_db = db.query(models.RequestForRepairElv).filter(models.RequestForRepairElv.id == request_id).first()
+	db.delete(request_db)
+	db.commit()
+	return 1
+
+
+def approve_request_for_repair_elv(db: Session, request_id: int):
+	db_request = db.query(models.RequestForRepairElv).filter(models.RequestForRepairElv.id == request_id).first()
+	db_request.checked_by_manager = 1
+	db.add(db_request)
+	db.commit()
+	return db_request

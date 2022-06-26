@@ -232,7 +232,7 @@ def get_apartments_for_repairmen(repairman_id: int, db: Session = Depends(get_db
 
 
 ###############################################################################################
-# ENDPOINT FOR Apartment AND REPAIRMEN ################################################################################
+# ENDPOINT FOR REQUESTS FOR REPAIR ################################################################################
 
 
 @app.post('/request_for_repair', response_model=schemas.RequestForRepair)
@@ -260,6 +260,62 @@ def get_request_repair_for_user(user_id: int, db: Session = Depends(get_db)):
 @app.delete('/request_for_repair/remove/{request_id}', response_model=DeleteResponse)
 def remove_request(request_id: int, db: Session = Depends(get_db)):
 	response = crud.remove_request_for_repair(db, request_id)
+	if response is None:
+		raise HTTPException(status_code=404, detail="request not found")
+	return {"response": "success"}
+
+
+###############################################################################################
+# ENDPOINT FOR REQUESTS FOR REPAIR ELV ################################################################################
+
+
+@app.post('/request_for_repair_elv', response_model=schemas.RequestForRepairElv)
+def create_request_for_repair(request: schemas.RequestForRepairElvCreate, db: Session = Depends(get_db)):
+	db_request = crud.create_request_for_repair_elv(db, request)
+	return db_request
+
+
+@app.get('/request_for_repair_elv/repairman/{repairman_id}', response_model=List[schemas.RequestForRepairElv])
+def get_request_repair_elv_for_repairman(repairman_id: int, db: Session = Depends(get_db)):
+	requests = crud.get_request_repair_elv_for_repairman(db, repairman_id)
+	if requests is None:
+		raise HTTPException(status_code=404, detail='no request was found')
+	return requests
+
+
+@app.get('/request_for_repair_elv/user/{user_id}', response_model=List[schemas.RequestForRepairElv])
+def get_request_repair_elv_for_user(user_id: int, db: Session = Depends(get_db)):
+	requests = crud.get_request_repair_elv_for_user(db, user_id)
+	if requests is None:
+		raise HTTPException(status_code=404, detail='no request was found')
+	return requests
+
+
+@app.get('/request_for_repair_elv/manager/{manager_id}', response_model=List[schemas.RequestForRepairElv])
+def get_request_repair_elv_for_manager(manager_id: int, db: Session = Depends(get_db)):
+	requests = crud.get_request_repair_elv_for_manager(db, manager_id)
+	if requests is None:
+		raise HTTPException(status_code=404, detail='no request was found')
+	return requests
+
+
+@app.delete('/request_for_repair_elv/remove/{request_id}', response_model=DeleteResponse)
+def remove_elv_request(request_id: int, db: Session = Depends(get_db)):
+	response = crud.remove_request_for_repair_elv(db, request_id)
+	if response is None:
+		raise HTTPException(status_code=404, detail="request not found")
+	return {"response": "success"}
+
+
+@app.patch('/request_for_repair_elv/approve/{request_id}', response_model=schemas.RequestForRepairElv)
+def approve_request(request_id: int, db: Session = Depends(get_db)):
+	response = crud.approve_request_for_repair_elv(db, request_id)
+	return response
+
+
+@app.delete('/request_for_repair_elv/delete/{request_id}', response_model=DeleteResponse)
+def remove_request_elv(request_id: int, db: Session = Depends(get_db)):
+	response = crud.remove_request_for_repair_elv(db, request_id)
 	if response is None:
 		raise HTTPException(status_code=404, detail="request not found")
 	return {"response": "success"}
