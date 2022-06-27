@@ -109,7 +109,7 @@ class ApartmentAndRepairmen(ApartmentAndRepairmenBase):
 	apartment_name: str
 
 	class Config:
-		orm_model = True
+		orm_mode = True
 
 
 class RequestForRepairBase(BaseModel):
