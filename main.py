@@ -198,9 +198,15 @@ def get_hiring_requests_for_repairman(repairman_id: int, db: Session = Depends(g
 	return requests
 
 
+@app.delete('/requests/hiring/remove/{request_id}', response_model=DeleteResponse)
+def remove_hiring_request(request_id: int, db: Session = Depends(get_db)):
+	request = crud.remove_hiring_request(db=db, request_id=request_id)
+	if request is None:
+		raise HTTPException(status_code=404, detail="request not found")
+
+
 ###############################################################################################
 # ENDPOINT FOR Apartment AND REPAIRMEN ################################################################################
-
 
 @app.post('/apartment_and_repairmen', response_model=schemas.ApartmentAndRepairmen)
 def create_apartment_and_repairmen(relation: schemas.ApartmentAndRepairmenCreate, db: Session = Depends(get_db)):
