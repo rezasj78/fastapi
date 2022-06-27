@@ -130,7 +130,7 @@ class RequestForRepair(RequestForRepairBase):
 	id: int
 
 	class Config:
-		orm_model = True
+		orm_mode = True
 
 
 class RequestForRepairElvBase(BaseModel):
@@ -153,4 +153,4 @@ class RequestForRepairElv(RequestForRepairBase):
 	checked_by_manager: int
 
 	class Config:
-		orm_model = True
+		orm_mode = True
