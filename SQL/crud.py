@@ -156,7 +156,11 @@ def create_request_for_hiring_repairman(db: Session, request: schemas.RequestFor
 
 def remove_hiring_request(db: Session, request_id: int):
 	request = db.query(models.RequestsForRepairman).filter(models.RequestsForRepairman.id == request_id).first()
-	return request
+	if request is None:
+		return None
+	db.delete(request)
+	db.commit()
+	return 1
 
 
 # APARTMENT AND REPAIRMAN STUFF ##################################
