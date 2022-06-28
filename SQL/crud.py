@@ -171,6 +171,13 @@ def get_apartment_and_repairmen_for_user(db: Session, apartment_id: int):
 		return None
 	relations = db.query(models.ApartmentAndRepairmen).filter(
 		models.ApartmentAndRepairmen.apartment_id == apartment_id).all()
+	print(relations[0].id)
+	print(relations[0].repairman_id)
+	print(relations[0].apartment_id)
+	print(relations[0].manager_id)
+	print(relations[0].job)
+	print(relations[0].repairman_name)
+	print(relations[0].apartment_name)
 	return relations
 
 
@@ -198,6 +205,7 @@ def create_apartment_and_repairmen(db: Session, aar: schemas.ApartmentAndRepairm
 	db.add(db_request)
 	db.commit()
 	db.refresh(db_request)
+	print("first4")
 	return db_request
 
 
