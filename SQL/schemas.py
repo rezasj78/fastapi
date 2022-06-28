@@ -142,11 +142,11 @@ class RequestForRepairElvBase(BaseModel):
 	repairman_name: str
 
 
-class RequestForRepairElvCreate(RequestForRepairBase):
+class RequestForRepairElvCreate(RequestForRepairElvBase):
 	pass
 
 
-class RequestForRepairElv(RequestForRepairBase):
+class RequestForRepairElv(RequestForRepairElvCreate):
 	id: int
 	manager_id: int
 	manager_name: str

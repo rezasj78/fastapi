@@ -211,10 +211,11 @@ def remove_hiring_request(request_id: int, db: Session = Depends(get_db)):
 @app.post('/apartment_and_repairmen', response_model=schemas.ApartmentAndRepairmen)
 def create_apartment_and_repairmen(relation: schemas.ApartmentAndRepairmenCreate, db: Session = Depends(get_db)):
 	db_relation = crud.create_apartment_and_repairmen(db, relation)
-	if db == 1:
+	if db_relation == 1:
 		raise HTTPException(status_code=404, detail='repairman not found')
-	if db == 2:
+	if db_relation == 2:
 		raise HTTPException(status_code=404, detail='apartment not found')
+	print("first5")
 
 	return db_relation
 
